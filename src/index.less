@@ -1,0 +1,324 @@
+.mind-elixir {
+  --gap: 30px; // child node horizontal gap, it will be updated at instance initialization
+
+  // May overwrited by js
+  --root-radius: 30px;
+  --main-radius: 30px;
+  --root-color: #ffffff;
+  --root-bgcolor: #4c4f69;
+  --main-color: #444446;
+  --main-bgcolor: #ffffff;
+  --topic-padding: 3px 12px;
+  --color: #777777;
+  --bgcolor: #f6f6f6;
+  --selected: #4dc4ff;
+  --panel-color: #444446;
+  --panel-bgcolor: #ffffff;
+  --panel-border-color: #eaeaea;
+  // ---
+
+  position: relative;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  font-family: -apple-system, BlinkMacSystemFont, Helvetica Neue, PingFang SC, Microsoft YaHei, Source Han Sans SC, Noto Sans CJK SC,
+    WenQuanYi Micro Hei, sans-serif;
+  .hyper-link {
+    text-decoration: none;
+    margin-left: 0.3em;
+  }
+}
+
+.map-container {
+  user-select: none;
+  height: 100%;
+  width: 100%;
+  overflow: scroll;
+  font-size: 15px;
+  * {
+    box-sizing: border-box; // must have, to make getComputedStyle work right
+  }
+  &::-webkit-scrollbar {
+    width: 0px;
+    height: 0px;
+  }
+  .selected {
+    box-shadow: 0 0 0 2px var(--selected);
+  }
+  .lhs {
+    direction: rtl;
+    me-tpc {
+      direction: ltr;
+    }
+  }
+  .map-canvas {
+    height: 20000px;
+    width: 20000px;
+    position: relative;
+    user-select: none;
+    transition: transform 0.3s;
+    transform: scale(1);
+    background-color: var(--bgcolor);
+    me-nodes {
+      position: absolute;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: fit-content;
+      width: fit-content;
+    }
+    me-root {
+      position: relative;
+      me-tpc {
+        display: block;
+        font-size: 25px;
+        color: var(--root-color);
+        padding: 10px var(--gap);
+        border-radius: var(--root-radius);
+        white-space: pre-wrap;
+        background-color: var(--root-bgcolor);
+        #input-box {
+          padding: 10px var(--gap);
+        }
+      }
+    }
+  }
+  me-main {
+    // main node
+    & > me-wrapper {
+      position: relative; // make subline svg's offsetParent be the main node
+      margin: 45px 65px;
+      & > me-parent {
+        margin: 10px;
+        padding: 0;
+        & > me-tpc {
+          border-radius: var(--main-radius);
+          background-color: var(--main-bgcolor);
+          border: 2px solid var(--main-color);
+          color: var(--main-color);
+          padding: 8px 25px;
+          #input-box {
+            padding: 8px 25px;
+          }
+        }
+      }
+    }
+  }
+  me-wrapper {
+    display: block;
+    pointer-events: none;
+    width: fit-content;
+    // position: relative;
+  }
+  me-children,
+  me-parent {
+    display: inline-block;
+    vertical-align: middle;
+  }
+  me-parent {
+    position: relative; // for locating expand button
+    cursor: pointer;
+    padding: 6px var(--gap);
+    margin-top: 10px;
+    me-tpc {
+      position: relative;
+      display: block;
+      border-radius: 12px;
+      color: var(--color);
+      pointer-events: all;
+      max-width: 35em;
+      white-space: pre-wrap;
+      padding: var(--topic-padding);
+    &:hover {
+    opacity: 0.8;
+  }
+
+      
+      // drag preview
+      .insert-preview {
+        position: absolute;
+        width: 100%;
+        left: 0px;
+        z-index: 9;
+      }
+      .show {
+        background: #7ad5ff;
+        pointer-events: none; // 不加会识别为不可移动
+        opacity: 0.7;
+      }
+      .before {
+        height: 14px;
+        top: -14px;
+      }
+      .in {
+        height: 100%;
+        top: 0px;
+      }
+      .after {
+        height: 14px;
+        bottom: -14px;
+      }
+    }
+    me-epd {
+      position: absolute;
+      height: 24px;
+      width: 24px;
+      opacity: 0.8;
+      background-image: url('./icons/add-circle.svg');
+      background-repeat: no-repeat;
+      background-size: contain;
+      background-position: center;
+
+      pointer-events: all;
+      z-index: 9;
+      &.minus {
+        background-image: url('./icons/minus-circle.svg') !important;
+        transition: opacity 0.3s;
+        opacity: 0;
+        &:hover {
+          opacity: 0.8;
+        }
+      }
+    }
+  }
+.toolbar-row {
+  display: flex;
+  justify-content: start;
+  margin-bottom: 8px;
+  /* Khoảng cách giữa các hàng */
+}
+
+  // iconfont
+  .icon {
+    width: 1em;
+    height: 1em;
+    vertical-align: -0.15em;
+    fill: currentColor;
+    overflow: hidden;
+  }
+  .lines,
+  .summary,
+  .subLines,
+  .topiclinks,
+  .linkcontroller {
+    position: absolute;
+    height: 102%;
+    width: 100%;
+    top: 0;
+    left: 0;
+  }
+  .topiclinks,
+  .linkcontroller,
+  .summary {
+    pointer-events: none;
+    text {
+      pointer-events: all;
+    }
+    .selected {
+      pointer-events: none;
+    }
+  }
+  .lines,
+  .subLines {
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  .topiclinks,
+  .linkcontroller {
+    * {
+      z-index: 100;
+    }
+  }
+  .topiclinks {
+    g {
+      cursor: pointer;
+    }
+  }
+  #input-box {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: var(--topic-padding);
+    color: var(--color);
+    background-color: var(--bgcolor);
+    width: max-content; // let words expand the div and keep max length at the same time
+    max-width: 35em;
+    z-index: 11;
+    direction: ltr;
+    user-select: auto;
+    pointer-events: all;
+  }
+
+  me-tpc {
+    & > * {
+      // tags,icons,images should not response to click event
+      pointer-events: none;
+    }
+    & > img {
+      display: block;
+      margin-bottom: 8px;
+      object-fit: cover;
+    }
+    & > .text {
+      display: inline-block;
+    }
+  }
+  .circle {
+    position: absolute;
+    height: 10px;
+    width: 10px;
+    margin-top: -5px;
+    margin-left: -5px;
+    border-radius: 100%;
+    background: #757575;
+    border: 2px solid #ffffff;
+
+    cursor: pointer;
+  }
+
+  .tags {
+    direction: ltr;
+    span {
+      display: inline-block;
+      border-radius: 3px;
+      padding: 2px 4px;
+      background: #d6f0f8;
+      color: #276f86;
+      margin: 0px;
+      font-size: 12px;
+      line-height: 1.3em;
+      margin-right: 3px;
+      margin-top: 2px;
+    }
+  }
+  .icons {
+    display: inline-block;
+    direction: ltr;
+    margin-right: 10px;
+    span {
+      display: inline-block;
+      line-height: 1.3em;
+    }
+  }
+
+  .mind-elixir-ghost {
+    position: fixed;
+    top: -100%;
+    left: -100%;
+    box-sizing: content-box;
+    opacity: 0.5;
+    background-color: #f6f6f6;
+    max-width: 200px;
+    width: fit-content;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    padding: 8px 16px;
+    border-radius: 6px;
+    border: #666666 2px solid;
+  }
+
+  .selection-area {
+    background: #4f90f22d;
+    border: 1px solid #4f90f2;
+  }
+}

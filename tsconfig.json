@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "allowJs": false,
+     "jsx": "react",
+    "declaration": true,
+    "outDir": "dist/types",
+
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "module": "ESNext",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "skipLibCheck": true,
+
+    /* Bundler mode */
+    "isolatedModules": true,
+    "emitDeclarationOnly": true,
+    // "noEmit": true,
+
+    /* Linting */
+    "strict": true,
+    
+    "noFallthroughCasesInSwitch": true,
+    "noErrorTruncation": true,
+    // "moduleResolution": "nodenext"
+    "moduleResolution": "Node",
+  },
+  "include": ["src"],
+  "exclude": ["src/dev.dist.ts"]
+}
