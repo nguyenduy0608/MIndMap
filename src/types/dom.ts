@@ -33,7 +33,6 @@ export interface Topic extends HTMLElement {
   parentNode: Parent
   parentElement: Parent
   offsetParent: Parent
-
   text: HTMLSpanElement
   expander?: Expander
 

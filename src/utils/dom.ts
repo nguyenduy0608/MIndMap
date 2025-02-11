@@ -92,6 +92,8 @@ export const createWrapper = function (this: MindElixirInstance, nodeObj: NodeOb
   grp.appendChild(p)
   if (!omitChildren && nodeObj.children && nodeObj.children.length > 0) {
     const expander = createExpander(nodeObj.expanded)
+    // const comment = createComment(nodeObj.comment, nodeObj)
+    // nodeObj?.listCommment !== 0 && p.appendChild(comment)
     p.appendChild(expander)
     // tpc.expander = expander
     if (nodeObj.expanded !== false) {
@@ -99,6 +101,7 @@ export const createWrapper = function (this: MindElixirInstance, nodeObj: NodeOb
       grp.appendChild(children)
     }
   }
+
   return { grp, top: p, tpc }
 }
 
@@ -191,5 +194,22 @@ export const createExpander = function (expanded: boolean | undefined): Expander
   // if expanded is undefined, treat as expanded
   expander.expanded = expanded !== false
   expander.className = expanded !== false ? 'minus' : ''
+  return expander
+}
+export const createComment = function (comment: boolean | undefined, nodeObj?: any): any {
+  const expander = $d.createElement('me-comment') as any
+
+  // Thiết lập thuộc tính expanded dựa trên giá trị của comment
+  expander.expanded = comment !== false
+
+  // Tạo nội dung bên trong phần tử để hiển thị số
+  if (nodeObj) {
+    const numberElement = $d.createElement('span') // Tạo một thẻ span để chứa số
+    numberElement.textContent = '4' // Đặt số làm nội dung của thẻ span
+    expander.appendChild(numberElement)
+  }
+
+  // Đưa số vào bên trong phần tử me-comment
+
   return expander
 }

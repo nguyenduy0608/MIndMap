@@ -69,12 +69,14 @@ export default function (mind: MindElixirInstance) {
     13: e => {
       // enter
       if (e.shiftKey) {
-        mind.insertSibling('before')
+        mind.insertSibling('after')
       } else if (e.ctrlKey) {
         mind.insertParent()
       } else {
-        // mind.insertSibling('after')
-        mind.addChildExpand()
+        mind.insertSibling('after')
+        // mind.insertSibling('before')
+
+        // mind.addChildExpand()
       }
     },
     9: () => {

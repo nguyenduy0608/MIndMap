@@ -1,5 +1,5 @@
 import { fillParent, refreshIds, unionTopics } from './utils/index'
-import { findEle, createExpander, shapeTpc } from './utils/dom'
+import { findEle, createExpander, shapeTpc, createComment } from './utils/dom'
 import { deepClone } from './utils/index'
 import type { Topic } from './types/dom'
 import type { MindElixirInstance, NodeObj } from './types/index'
@@ -60,14 +60,15 @@ export const insertSibling = function (this: MindElixirInstance, type: 'before' 
     this.addChild()
     return
   } else if (nodeObj.parent?.root === true && nodeObj.parent?.children?.length === 1) {
-    // add at least one node to another side
     this.addChild(findEle(nodeObj.parent!.id), node)
     return
   }
   let newNodeObj: any = node || this.generateNewObj()
+  console.log('🚀 ~ insertSibling ~ nodeObj:', nodeObj)
 
   newNodeObj = {
     ...newNodeObj,
+    direction: nodeObj?.direction,
     style: nodeObj?.style,
   }
   insertNodeObj(newNodeObj, type, nodeObj)
@@ -85,11 +86,11 @@ export const insertSibling = function (this: MindElixirInstance, type: 'before' 
   }
   this.selectNode(top.firstChild, true)
 
-  // if (newNodeObj?.parent?.children?.[newNodeObj?.parent?.children.length - 1]?.style)
   this.bus.fire('operation', {
     name: 'insertSibling',
     type,
     obj: newNodeObj,
+    nodeObj: nodeObj,
   })
 }
 
@@ -99,6 +100,7 @@ export const addChildExpand = function (this: MindElixirInstance, el?: Topic, no
   const res = addChildDomExpand(this, nodeEle, node)
   if (!res) return
   const { newTop, newNodeObj } = res
+  console.log('🚀 ~ addChildExpand ~ newNodeObj:', newNodeObj)
   this.bus.fire('operation', {
     name: 'addChildExpand',
     obj: newNodeObj,
@@ -124,6 +126,7 @@ export const insertParent = function (this: MindElixirInstance, el?: Topic, node
   console.time('insertParent_DOM')
   const { grp, top } = this.createWrapper(newNodeObj, true)
   top.appendChild(createExpander(true))
+  // top.appendChild(createComment(true, newNodeObj))
   grp0.insertAdjacentElement('afterend', grp)
 
   const c = this.createChildren([grp0])

@@ -15,13 +15,20 @@ type NodeOperation =
         | 'insertParent'
         | 'insertBefore'
         | 'beginEdit'
+        | 'selectConnect'
+        | 'commentNode'
+        | 'addImage'
+        | 'addVdieo'
+        | 'copyExpandTable'
       obj: NodeObj
       result?: any
+      nodeEle?: any
     }
   | {
       name: 'insertSibling'
       type: 'before' | 'after'
       obj: NodeObj
+      nodeObj?: NodeObj
     }
   | {
       name: 'reshapeNode'
@@ -82,6 +89,14 @@ export type ArrowOperation =
       name: 'finishEditArrowLabel'
       obj: Arrow
     }
+  | {
+      name: 'selectArrow'
+      obj: any
+    }
+  | {
+      name: 'editLink'
+      obj: any
+    }
 
 export type Operation = NodeOperation | MultipleNodeOperation | SummaryOperation | ArrowOperation
 export type OperationType = Operation['name']
@@ -93,7 +108,15 @@ export type EventMap = {
   selectNodes: (nodeObj: NodeObj[]) => void
   unselectNode: () => void
   unselectNodes: () => void
+  selectConnect: (NodeObj: NodeObj) => void
   expandNode: (nodeObj: NodeObj) => void
+  commentNode: (nodeObj: NodeObj) => void
+  addImage: (nodeObj: NodeObj) => void
+  addVideo: (nodeObj: NodeObj) => void
+  moveLeft: (NodeObj: NodeObj) => void
+  moveRight: (NodeObj: NodeObj) => void
+  copyExpandTable: (nodeObj: NodeObj) => void
+  zoom: () => void
 }
 
 const Bus = {

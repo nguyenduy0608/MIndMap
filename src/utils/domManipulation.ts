@@ -3,7 +3,7 @@ import { LEFT, RIGHT, SIDE } from '../const'
 import { mainToSub } from '../nodeOperation'
 import type { MindElixirInstance, NodeObj } from '../types'
 import type { Topic, Wrapper } from '../types/dom'
-import { findEle, createExpander } from './dom'
+import { findEle, createExpander, createComment } from './dom'
 
 // Judge new added node L or R
 export const judgeDirection = function (direction: number, obj: NodeObj) {
@@ -34,6 +34,7 @@ export const realAddChild = function (mei: MindElixirInstance, to: Topic, wrappe
     } else {
       const c = mei.createChildren([wrapper])
       top.appendChild(createExpander(true))
+      // top.appendChild(createComment(true))
       top.insertAdjacentElement('afterend', c)
     }
     mei.linkDiv(wrapper.offsetParent as Wrapper)
@@ -76,14 +77,14 @@ export const addChildDomExpand = function (mei: MindElixirInstance, tpc: Topic, 
   const newNodeObj = node || mei.generateNewObj()
   newNodeObj.style = newNodeObj.style || {}
   if (nodeObj.parent === undefined) {
-    newNodeObj.style.background = '#fff'
-    newNodeObj.style.color = '#000000'
+    newNodeObj.style.background = '#FFF'
+    newNodeObj.style.color = '#2c3e50'
   } else if (nodeObj.parent.parent === undefined) {
-    newNodeObj.style.background = getRandomColor()
-    newNodeObj.style.color = '#ecf0f1'
+    newNodeObj.style.background = nodeObj?.style?.background
+    newNodeObj.style.color = nodeObj?.style?.color
   } else {
     newNodeObj.style.background = nodeObj?.style?.background
-    newNodeObj.style.color = '#ecf0f1'
+    newNodeObj.style.color = nodeObj?.style?.color
   }
   if (nodeObj.children) nodeObj.children.push(newNodeObj)
   else nodeObj.children = [newNodeObj]

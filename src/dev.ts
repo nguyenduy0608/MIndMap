@@ -34,19 +34,43 @@ const options: Options = {
     link: true,
     extend: [
       {
-        name: 'Node edittttt',
+        name: 'thêm nhánh',
         onclick: () => {
-          alert('extend menu')
+          mind.addChild()
         },
       },
       {
-        name: 'Thêm vấn đề/bài toán',
-        onclick: () => {},
+        name: 'Xoas noois',
+        onclick: () => {
+          mind.removeArrow()
+        },
       },
+      {
+        name: 'Thêm nhánh',
+        onclick: () => {
+          mind.createArrow(
+            {
+              nodeObj: {
+                id: 'bd1b9b94a9a7a913', // ID của nodeư
+              },
+            },
+            {
+              nodeObj: {
+                id: 'bd1beff607711025',
+                topic: 'Node B', // Bổ sung thêm thuộc tính 'topic'
+              },
+
+              // Các thuộc tính khác nếu có thể thiết lập được...
+            },
+            'me-root'
+          )
+        },
+      },
+
       {
         name: 'tải ảnh',
         onclick: () => {
-          window.downloadPng()
+          window.downloadSvg()
         },
       },
     ],
@@ -72,40 +96,71 @@ const options: Options = {
 
 const mind = new MindElixir(options)
 
-const data = MindElixir.new('new  1')
 mind.init(example)
 
+const data = MindElixir.new('new  1')
 const m2 = new MindElixir({
   el: '#map2',
   allowUndo: true,
+  direction: 2,
+  newTopicName: 'Vấn đề/bài toán',
+  // direction: MindElixir.RIGHT,
+  locale: 'en',
+  draggable: true,
+  editable: true,
+  contextMenu: true,
+  contextMenuOption: {
+    focus: true,
+    link: true,
+    extend: [
+      {
+        name: 'Node edittttt',
+        onclick: () => {
+          alert('extend menu')
+        },
+      },
+      {
+        name: 'Xoas noois',
+        onclick: () => {
+          mind.removeArrow()
+        },
+      },
+      {
+        name: 'thêm nhánh',
+        onclick: () => {
+          mind.addChild()
+        },
+      },
+    ],
+  },
+
+  mobileMenu: true,
+  toolBar: true,
+  nodeMenu: true,
+  keypress: true,
+  before: {
+    insertSibling(el, obj) {
+      console.log('insertSibling', el, obj)
+      return true
+    },
+    async addChild(el, obj) {
+      console.log('addChild', el, obj)
+      return true
+    },
+  },
 })
 m2.init(data)
 
-function sleep() {
-  return new Promise<void>(res => {
-    setTimeout(() => res(), 1000)
-  })
-}
-
 mind.bus.addListener('operation', (operation: Operation) => {
   console.log(operation)
-  // return {
-  //   name: action name,
-  //   obj: target object
-  // }
-
-  // name: [insertSibling|addChild|removeNode|beginEdit|finishEdit]
-  // obj: target
-
-  // name: moveNodeIn
-  // obj: {from:target1,to:target2}
 })
 mind.bus.addListener('selectNode', node => {
-  // console.log(node)
+  console.log(node)
 })
-mind.bus.addListener('expandNode', node => {
-  // console.log('expandNode: ', node)
+mind.bus.addListener('selectConnect', node => {
+  console.log(node)
 })
+mind.bus.addListener('expandNode', node => {})
 
 const download = (type: 'svg' | 'png') => {
   return async () => {

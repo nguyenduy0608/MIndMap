@@ -61,6 +61,8 @@ export interface MindElixirInstance extends MindElixirMethods {
   draggable: boolean
   editable: boolean
   contextMenu: boolean
+  hideExpandMenu?: boolean
+  expandMenu: boolean
   contextMenuOption: object
   toolBar: boolean
   keypress: boolean
@@ -116,8 +118,10 @@ export type Options = {
   draggable?: boolean
   editable?: boolean
   contextMenu?: boolean
+  expandMenu?: boolean
   contextMenuOption?: any
   toolBar?: boolean
+  hideExpandMenu?: boolean
   keypress?: boolean
   mouseSelectionButton?: 0 | 2
   before?: Before
@@ -139,7 +143,7 @@ export type Uid = string
  * @public
  */
 export type NodeObj = {
-  topic: string
+  topic: any
   id: Uid
   style?: {
     fontSize?: string
@@ -152,6 +156,8 @@ export type NodeObj = {
   icons?: string[]
   hyperLink?: string
   expanded?: boolean
+  listCommment?: any
+  comment?: boolean
   direction?: number
   root?: boolean
   image?: {

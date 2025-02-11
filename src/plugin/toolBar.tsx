@@ -25,6 +25,8 @@ function createToolBarRBContainer(mind: MindElixirInstance) {
   const toolBarRBContainer = document.createElement('div')
   toolBarRBContainer.className = 'mind-elixir-toolbar rb'
 
+  const row4 = document.createElement('div')
+  row4.className = 'toolbar-row'
   const row1 = document.createElement('div')
   row1.className = 'toolbar-row'
   const row2 = document.createElement('div')
@@ -36,17 +38,20 @@ function createToolBarRBContainer(mind: MindElixirInstance) {
   const gc = createButton('toCenter', 'living', 'Trung tâm')
   const zo = createButton('zoomout', 'move', 'Thu nhỏ(hoặc CRL + scroll xuống)')
   const zi = createButton('zoomin', 'add', 'Phóng to(hoặc CRL + scroll lên)')
-  const dichuyen = createButton('dichuyen', '', 'Giữ chuột phải để di chuyển')
+  const dichuyen = createButton('dichuyen', '', 'Giữ chuột trái + space để di chuyển')
+  const instruction = createButton('instruction', 'question', 'Hướng dẫn sử dụng ?')
 
+  row4.appendChild(instruction)
   row1.appendChild(dichuyen)
   row2.appendChild(zi)
   row3.appendChild(zo)
   // row3.appendChild(gc)
   // row2.appendChild(fc)
 
-  toolBarRBContainer.appendChild(row1)
   toolBarRBContainer.appendChild(row2)
   toolBarRBContainer.appendChild(row3)
+  // toolBarRBContainer.appendChild(row4)
+  toolBarRBContainer.appendChild(row1)
 
   // Thêm nút đóng
   const closeButton = document.createElement('button')
@@ -63,13 +68,18 @@ function createToolBarRBContainer(mind: MindElixirInstance) {
   gc.onclick = () => {
     mind.toCenter()
   }
+  instruction.onclick = () => {
+    window.open('https://support.ezsale.vn/mindmapcustomer/58c40fe7-1e54-44f8-ae15-68bea5944840')
+  }
   zo.onclick = () => {
     if (mind.scaleVal < 0.6) return
     mind.scale((mind.scaleVal -= 0.2))
+    mind.bus.fire('zoom')
   }
   zi.onclick = () => {
     if (mind.scaleVal > 1.6) return
     mind.scale((mind.scaleVal += 0.2))
+    mind.bus.fire('zoom')
   }
   return toolBarRBContainer
 }

@@ -23,7 +23,7 @@ const calcCurentObject = function (operation: Operation): History['currentObject
       type: 'summary',
       value: (operation as any).obj.id,
     }
-  } else if (['createArrow', 'removeArrow', 'finishEditArrowLabel'].includes(operation.name)) {
+  } else if (['createArrow', 'removeArrow', 'finishEditArrowLabel', 'selectArrow', 'editLink'].includes(operation.name)) {
     return {
       type: 'arrow',
       value: (operation as any).obj.id,

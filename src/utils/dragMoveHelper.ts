@@ -1,5 +1,5 @@
 export default {
-  moved: false, // diffrentiate click and move
+  moved: false,
   mousedown: false,
   onMove(e: MouseEvent, container: HTMLElement) {
     if (this.mousedown) {

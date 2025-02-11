@@ -69,11 +69,10 @@ function generateSvgTextUsingForeignObject(tpc: HTMLElement, tpcStyle: CSSStyleD
   const div = document.createElement('div')
   setAttributes(div, {
     xmlns: 'http://www.w3.org/1999/xhtml',
-    style: `font-family:Roboto, Arial, sans-serif; font-size:${tpcStyle.fontSize}; font-weight: ${tpcStyle.fontWeight}; color: ${tpcStyle.color}; white-space: pre-wrap;`,
+    style: `font-family: ${tpcStyle.fontFamily}; font-size: ${tpcStyle.fontSize}; font-weight: ${tpcStyle.fontWeight}; color: ${tpcStyle.color}; white-space: pre-wrap;`,
   })
   div.innerHTML = content
   foreignObject.appendChild(div)
-  console.log('🚀 ~ generateSvgTextUsingForeignObject ~ foreignObject:', foreignObject)
   return foreignObject
 }
 
@@ -114,14 +113,9 @@ function convertDivToSvg(mei: MindElixirInstance, tpc: HTMLElement, useForeignOb
   const g = document.createElementNS(ns, 'g')
   g.appendChild(bg)
   let text: SVGGElement | null
-  if ((tpc as Topic).nodeObj?.dangerouslySetInnerHTML && !useForeignObject) {
-    text = generateSvgTextUsingForeignObject(tpc, tpcStyle, x, y) as unknown as SVGGElement
-  } else if (useForeignObject) {
+  if (useForeignObject) {
     text = generateSvgTextUsingForeignObject(tpc, tpcStyle, x, y)
-  } else {
-    text = generateSvgText(tpc, tpcStyle, x, y)
-    console.log(text)
-  }
+  } else text = generateSvgText(tpc, tpcStyle, x, y)
   g.appendChild(text)
   return g
 }
@@ -168,7 +162,11 @@ const generateSvg = (mei: MindElixirInstance, noForeignObject = false) => {
   const mapDiv = mei.nodes
   const height = mapDiv.offsetHeight + padding * 2
   const width = mapDiv.offsetWidth + padding * 2
+
+  // Tạo SVG container
   const svg = createSvgDom(height + 'px', width + 'px')
+
+  // Tạo phần tử <g> và <rect> cho background màu trắng
   const g = document.createElementNS(ns, 'svg')
   const bgColor = document.createElementNS(ns, 'rect')
   setAttributes(bgColor, {
@@ -176,9 +174,45 @@ const generateSvg = (mei: MindElixirInstance, noForeignObject = false) => {
     y: '0',
     width: `${width}`,
     height: `${height}`,
-    fill: mei.theme.cssVar['--bgcolor'] as string,
+    fill: '#fff',
   })
+
+  // Tạo phần tử <pattern> để lặp lại hình ảnh
+  const pattern = document.createElementNS(ns, 'pattern')
+  setAttributes(pattern, {
+    id: 'backgroundPattern', // ID cho pattern
+    patternUnits: 'userSpaceOnUse',
+    width: '500', // Chiều rộng của một đơn vị hình ảnh
+    height: '500', // Chiều cao của một đơn vị hình ảnh
+  })
+
+  // Thêm hình ảnh vào pattern
+  const backgroundImage = document.createElementNS(ns, 'image')
+  setAttributes(backgroundImage, {
+    href: 'https://dev.api.solution.winds.vn//solution-file/solution_87d32fb3-e20a-4750-9d69-bd5d57656481.png',
+    width: '500', // Chiều rộng của mỗi phần hình ảnh
+    height: '500', // Chiều cao của mỗi phần hình ảnh
+  })
+  pattern.appendChild(backgroundImage)
+
+  // Thêm pattern vào defs
+  const defs = document.createElementNS(ns, 'defs')
+  defs.appendChild(pattern)
+  svg.appendChild(defs)
+
+  // Sử dụng pattern cho phần tử rect (background)
+  const bgRect = document.createElementNS(ns, 'rect')
+  setAttributes(bgRect, {
+    x: '0',
+    y: '0',
+    width: `${width}`,
+    height: `${height}`,
+    fill: 'url(#backgroundPattern)', // Sử dụng pattern đã tạo
+  })
+
+  // Thêm các phần tử vào SVG
   svg.appendChild(bgColor)
+  svg.appendChild(bgRect)
   mapDiv.querySelectorAll('.subLines').forEach(item => {
     const clone = item.cloneNode(true) as SVGSVGElement
     const { offsetLeft, offsetTop } = getOffsetLT(mapDiv, item.parentElement as HTMLElement)
@@ -252,7 +286,6 @@ export const exportPng = async function (this: MindElixirInstance, noForeignObje
   const blob = this.exportSvg(noForeignObject, injectCss)
   // use base64 to bypass canvas taint
   const url = await blobToUrl(blob)
-  console.log('export')
   return new Promise((resolve, reject) => {
     const img = new Image()
     img.setAttribute('crossOrigin', 'anonymous')

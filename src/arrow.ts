@@ -1,7 +1,7 @@
 import { generateUUID, getArrowPoints, getObjById, getOffsetLT, setAttributes } from './utils/index'
 import LinkDragMoveHelper from './utils/LinkDragMoveHelper'
 import { findEle } from './utils/dom'
-import { createSvgGroup, editSvgText } from './utils/svg'
+import { createSvgArrowGroup, createSvgGroup, editSvgText } from './utils/svg'
 import type { CustomSvg, Topic } from './types/dom'
 import type { MindElixirInstance, Uid } from './index'
 
@@ -35,6 +35,7 @@ export type DivData = {
 
 function calcCtrlP(mei: MindElixirInstance, tpc: Topic, delta: { x: number; y: number }) {
   const { offsetLeft: x, offsetTop: y } = getOffsetLT(mei.nodes, tpc)
+
   const w = tpc.offsetWidth
   const h = tpc.offsetHeight
   const cx = x + w / 2
@@ -106,7 +107,7 @@ const drawArrow = function (mei: MindElixirInstance, from: Topic, to: Topic, obj
 
   const arrowPoint = getArrowPoints(p3x, p3y, p4x, p4y)
 
-  const newSvgGroup = createSvgGroup(
+  const newSvgGroup = createSvgArrowGroup(
     `M ${p1x} ${p1y} C ${p2x} ${p2y} ${p3x} ${p3y} ${p4x} ${p4y}`,
     `M ${arrowPoint.x1} ${arrowPoint.y1} L ${p4x} ${p4y} L ${arrowPoint.x2} ${arrowPoint.y2}`
   )
@@ -127,22 +128,144 @@ const drawArrow = function (mei: MindElixirInstance, from: Topic, to: Topic, obj
   const end = performance.now()
 }
 
-export const createArrow = function (this: MindElixirInstance, from: Topic, to: Topic) {
+export const createArrow = function (this: MindElixirInstance, from: any, to: any, mainId?: any) {
+  const element1: any = document.querySelector(`[data-nodeid="me${from?.nodeObj?.id}"]`)
+  const rect1 = element1?.getBoundingClientRect()
+
+  const element2: any = document.querySelector(`[data-nodeid="me${to.nodeObj?.id}"]`)
+  const rect2 = element2?.getBoundingClientRect()
+
+  const main: any = mainId ? document.querySelector(`[data-nodeid="me${mainId}"]`) : null
+  const rectMain = main?.getBoundingClientRect() || { x: 0, y: 0 }
+
+  const y1 = rect1?.y
+  const y2 = rect2?.y
+  const x1 = rect1?.x
+  const x2 = rect2?.x
+  const xMain = rectMain?.x
+  const yMain = rectMain?.y
+
+  let delta1 = { x: 0, y: 0 }
+  let delta2 = { x: 0, y: 0 }
+  if (x1 < xMain && x2 < xMain) {
+    // Cả hai nút nằm bên trái của nút chính
+    if (y2 === y1) {
+      // Cùng cấp ngang
+      if (x2 > x1) {
+        delta1 = { x: rect1?.width / 2, y: -rect1?.height }
+        delta2 = { x: -rect2?.width / 2, y: -rect2?.height }
+      } else {
+        delta1 = { x: -rect1?.width / 2, y: -rect1?.height }
+        delta2 = { x: rect2?.width / 2, y: -rect2?.height }
+      }
+    } else if (y2 > y1) {
+      // Nút đến dưới nút từ
+      if (x2 === x1) {
+        delta1 = { x: -rect1?.width / 2, y: rect1?.height }
+        delta2 = { x: -rect2?.width / 2, y: -rect2?.height }
+      } else if (x2 > x1) {
+        delta1 = { x: rect1?.width, y: rect1?.height / 2 }
+        delta2 = { x: -rect2?.width / 2 - 100, y: -rect2?.height }
+      } else {
+        delta1 = { x: -rect1?.width, y: rect1?.height }
+        delta2 = { x: -rect2?.width / 2, y: -rect2?.height }
+      }
+    } else {
+      // Nút đến trên nút từ
+      if (x2 === x1) {
+        delta1 = { x: -rect1?.width / 2, y: -rect1?.height }
+        delta2 = { x: -rect2?.width / 2, y: -rect2?.height }
+      } else if (x2 > x1) {
+        delta1 = { x: rect1?.width, y: -rect1?.height }
+        delta2 = { x: -rect2?.width, y: rect2?.height / 2 }
+      } else {
+        delta1 = { x: -rect1?.width / 2, y: -rect1?.height / 2 }
+        delta2 = { x: -rect2?.width, y: rect2?.height / 2 }
+      }
+    }
+  } else if (x1 > xMain && x2 > xMain) {
+    // Cả hai nút nằm bên phải của nút chính
+    if (y2 === y1) {
+      // Cùng cấp ngang
+      if (x2 > x1) {
+        delta1 = { x: rect1?.width / 2, y: -rect1?.height }
+        delta2 = { x: -rect2?.width / 2, y: -rect2?.height }
+      } else {
+        delta1 = { x: rect1?.width / 2, y: rect1?.height }
+        delta2 = { x: rect2?.width / 2, y: rect2?.height }
+      }
+    } else if (y2 > y1) {
+      // Nút đến dưới nút từ
+      if (x2 === x1) {
+        delta1 = { x: rect1?.width, y: rect1?.height }
+        delta2 = { x: rect2?.width, y: -rect2?.height }
+      } else if (x2 > x1) {
+        delta1 = { x: rect1?.width, y: rect1?.height }
+        delta2 = { x: -rect2?.width, y: -rect2?.height }
+      } else {
+        delta1 = { x: rect1?.width, y: rect1?.height }
+        delta2 = { x: rect2?.width, y: -rect2?.height }
+      }
+    } else {
+      // Nút đến trên nút từ
+      if (x2 === x1) {
+        delta1 = { x: rect1?.width, y: -rect1?.height }
+        delta2 = { x: rect2?.width, y: rect2?.height / 2 }
+      } else if (x2 > x1) {
+        delta1 = { x: rect1?.width, y: -rect1?.height / 2 }
+        delta2 = { x: -rect2?.witdh, y: rect2?.height }
+      } else {
+        delta1 = { x: rect1?.width, y: -rect1?.height / 2 }
+        delta2 = { x: rect2?.width, y: rect2?.height / 2 }
+      }
+    }
+  } else {
+    // Xử lý nút nằm ở hai bên đối diện của nút chính
+    if (y2 === y1) {
+      // Cùng cấp ngang
+      if (x2 < x1) {
+        delta1 = { x: -rect1?.width / 2, y: -rect1?.height }
+        delta2 = { x: rect2?.width / 2, y: -rect2?.height }
+      } else {
+        delta1 = { x: rect1?.width / 2, y: rect1?.height }
+        delta2 = { x: rect2?.width / 2, y: rect2?.height }
+      }
+    } else if (y2 > y1) {
+      // Nút đến dưới nút từ
+      if (x2 === x1) {
+        delta1 = { x: rect1?.width, y: rect1?.height }
+        delta2 = { x: -rect2?.width / 2, y: -rect2?.height }
+      } else if (x2 < x1) {
+        delta1 = { x: -rect1?.width, y: rect1?.height }
+        delta2 = { x: rect2?.width, y: -rect2?.height }
+      } else {
+        delta1 = { x: rect1?.width, y: rect1?.height }
+        delta2 = { x: -rect2?.width, y: rect2?.height }
+      }
+    } else {
+      // Nút đến trên nút từ
+      if (x2 === x1) {
+        delta1 = { x: rect1?.width / 2, y: rect1?.height }
+        delta2 = { x: rect2?.width / 2, y: rect2?.height }
+      } else if (x2 > x1) {
+        delta1 = { x: rect1?.width, y: -rect1?.height }
+        delta2 = { x: -rect2.width, y: rect2?.height / 2 }
+      } else {
+        delta1 = { x: -rect1?.width, y: -rect1?.height }
+        delta2 = { x: rect2?.width, y: rect2?.height }
+      }
+    }
+  }
   const arrowObj = {
     id: generateUUID(),
-    label: '',
+    label: 'nối',
     from: from.nodeObj.id,
     to: to.nodeObj.id,
-    delta1: {
-      x: 142.8828125,
-      y: -57,
-    },
-    delta2: {
-      x: 146.1171875,
-      y: 45,
-    },
+    delta1,
+    delta2,
   }
-  drawArrow(this, from, to, arrowObj)
+
+  drawArrow(this, findEle(from?.nodeObj?.id), findEle(to?.nodeObj?.id), arrowObj)
 
   this.bus.fire('operation', {
     name: 'createArrow',
@@ -157,6 +280,7 @@ export const removeArrow = function (this: MindElixirInstance, linkSvg?: CustomS
   } else {
     link = this.currentArrow
   }
+
   if (!link) return
   hideLinkController(this)
   const id = link.arrowObj!.id
@@ -180,6 +304,12 @@ export const selectArrow = function (this: MindElixirInstance, link: CustomSvg) 
   const toData = calcCtrlP(this, to, obj.delta2)
 
   showLinkController(this, obj, fromData, toData)
+  this.bus.fire('operation', {
+    name: 'selectArrow',
+    obj: {
+      obj,
+    },
+  })
 }
 
 export const unselectArrow = function (this: MindElixirInstance) {
@@ -257,6 +387,10 @@ const showLinkController = function (mei: MindElixirInstance, linkItem: Arrow, f
     // update linkItem
     linkItem.delta1.x = p2x - fromData.cx
     linkItem.delta1.y = p2y - fromData.cy
+    mei.bus.fire('operation', {
+      name: 'editLink',
+      obj: linkItem,
+    })
   })
 
   mei.helper2.init(mei.map, (deltaX, deltaY) => {
@@ -286,6 +420,10 @@ const showLinkController = function (mei: MindElixirInstance, linkItem: Arrow, f
     })
     linkItem.delta2.x = p3x - toData.cx
     linkItem.delta2.y = p3y - toData.cy
+    mei.bus.fire('operation', {
+      name: 'editLink',
+      obj: linkItem,
+    })
   })
 }
 
@@ -303,14 +441,12 @@ export function renderArrow(this: MindElixirInstance) {
 }
 
 export function editArrowLabel(this: MindElixirInstance, el: CustomSvg) {
-  console.time('editSummary')
   if (!el) return
   const textEl = el.children[2]
-  console.log(textEl, el)
   editSvgText(this, textEl, div => {
     const node = el.arrowObj
     const text = div.textContent?.trim() || ''
-    if (text === '') node.label = origin
+    if (text === '') node.label = ''
     else node.label = text
     div.remove()
     if (text === origin) return

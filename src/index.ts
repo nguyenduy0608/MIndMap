@@ -25,9 +25,11 @@ function MindElixir(
     draggable,
     editable,
     contextMenu,
+    expandMenu,
     contextMenuOption,
     toolBar,
     keypress,
+    hideExpandMenu,
     mouseSelectionButton,
     before,
     newTopicName,
@@ -56,6 +58,8 @@ function MindElixir(
   this.locale = locale || 'en'
   this.contextMenuOption = contextMenuOption
   this.contextMenu = contextMenu === undefined ? true : contextMenu
+  this.expandMenu = contextMenu === undefined ? true : contextMenu
+  this.hideExpandMenu = hideExpandMenu === undefined ? true : hideExpandMenu
   this.toolBar = toolBar === undefined ? true : toolBar
   this.keypress = keypress === undefined ? true : keypress
   this.mouseSelectionButton = mouseSelectionButton || 0
@@ -77,7 +81,7 @@ function MindElixir(
 
   this.bus = Bus.create()
 
-  this.container = $d.createElement('div') // map container
+  this.container = $d.createElement('div')
   this.container.className = 'map-container'
 
   const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
@@ -97,13 +101,13 @@ function MindElixir(
   this.lines = createLinkSvg('lines') // main link container
   this.summarySvg = createLinkSvg('summary') // summary container
 
-  this.linkController = createLinkSvg('linkcontroller') // bezier controller container
-  this.P2 = $d.createElement('div') // bezier P2
-  this.P3 = $d.createElement('div') // bezier P3
+  this.linkController = createLinkSvg('linkcontroller')
+  this.P2 = $d.createElement('div')
+  this.P3 = $d.createElement('div')
   this.P2.className = this.P3.className = 'circle'
   this.P2.style.display = this.P3.style.display = 'none'
-  this.line1 = createLine() // bezier auxiliary line1
-  this.line2 = createLine() // bezier auxiliary line2
+  this.line1 = createLine()
+  this.line2 = createLine()
   this.linkController.appendChild(this.line1)
   this.linkController.appendChild(this.line2)
   this.linkSvgGroup = createLinkSvg('topiclinks') // storage user custom link svg

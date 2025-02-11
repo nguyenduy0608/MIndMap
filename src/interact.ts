@@ -14,25 +14,29 @@ function collectData(instance: MindElixirInstance) {
   }
 }
 
-export const selectNode = function (this: MindElixirInstance, targetElement: Topic, isNewNode?: boolean, e?: MouseEvent): void {
+export const selectNode = function (this: MindElixirInstance, targetElement: Topic | string, isNewNode?: boolean, e?: MouseEvent): void {
   if (!targetElement) return
-  console.time('selectNode')
   this.clearSelection()
   if (typeof targetElement === 'string') {
     const el = findEle(targetElement)
     if (!el) return
     return this.selectNode(el)
   }
-  targetElement.className = 'selected'
-  targetElement.scrollIntoView({ block: 'nearest', inline: 'nearest' })
-  this.currentNode = targetElement
-  if (isNewNode) {
-    this.bus.fire('selectNewNode', targetElement.nodeObj)
+
+  if (targetElement) {
+    targetElement.classList.add('selected')
+    targetElement.scrollIntoView({ block: 'nearest', inline: 'nearest' })
+
+    this.currentNode = targetElement
+
+    if (isNewNode) {
+      this.bus.fire('selectNewNode', targetElement.nodeObj)
+    } else {
+      this.bus.fire('selectNode', targetElement.nodeObj, e)
+    }
   } else {
-    // the variable e indicates that the action is triggered by a click
-    this.bus.fire('selectNode', targetElement.nodeObj, e)
+    console.warn('targetElement không hợp lệ.')
   }
-  // console.timeEnd('selectNode')
 }
 
 export const unselectNode = function (this: MindElixirInstance) {
@@ -44,7 +48,6 @@ export const unselectNode = function (this: MindElixirInstance) {
 }
 
 export const selectNodes = function (this: MindElixirInstance, tpc: Topic[]): void {
-  console.time('selectNodes')
   this.clearSelection()
   for (const el of tpc) {
     el.className = 'selected'
@@ -297,9 +300,7 @@ export const expandNode = function (this: MindElixirInstance, el: Topic, isExpan
     const children = parent.parentNode.children[1]
     children.remove()
   }
-  // TODO 在此函数构造 html 结构，而非调用 layout
-  // this.layout()
-  // linkDiv 已实现只更新特定主节点
+
   this.linkDiv()
   this.bus.fire('expandNode', node)
 }

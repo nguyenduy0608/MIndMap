@@ -54,9 +54,39 @@ export const createSvgGroup = function (d: string, arrowd: string): CustomSvg {
 
   g.appendChild(path)
   g.appendChild(arrow)
+  g.dataset.type = 'connect-link'
+
+  console.log('svg')
   return g
 }
 
+export const createSvgArrowGroup = function (d: string, arrowd: string): CustomSvg {
+  const pathAttrs = {
+    stroke: 'rgb(235, 95, 82)',
+    fill: 'none',
+    'stroke-linecap': 'cap',
+    'stroke-width': '2',
+  }
+  const g = $d.createElementNS(svgNS, 'g') as CustomSvg
+  const path = $d.createElementNS(svgNS, 'path')
+  const arrow = $d.createElementNS(svgNS, 'path')
+  setAttributes(arrow, {
+    d: arrowd,
+    ...pathAttrs,
+  })
+  setAttributes(path, {
+    d,
+    ...pathAttrs,
+    'stroke-dasharray': '8,2',
+  })
+
+  g.appendChild(path)
+  g.appendChild(arrow)
+  g.dataset.type = 'connect-link'
+
+  console.log('svg')
+  return g
+}
 export const editSvgText = function (mei: MindElixirInstance, textEl: SVGTextElement, onblur: (div: HTMLDivElement) => void) {
   console.time('editSummary')
   if (!textEl) return

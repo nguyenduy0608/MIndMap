@@ -1,6 +1,7 @@
 import type { MindElixirInstance, MindElixirData } from './index'
 import linkDiv from './linkDiv'
 import contextMenu from './plugin/contextMenu'
+import expandMenu from './plugin/expandMenu'
 import keypress from './plugin/keypress'
 import mobileMenu from './plugin/mobileMenu'
 import nodeDraggable from './plugin/nodeDraggable'
@@ -16,6 +17,7 @@ import * as nodeOperation from './nodeOperation'
 import * as arrow from './arrow'
 import * as summary from './summary'
 import * as exportImage from './plugin/exportImage'
+import { hideIconContainer } from './mouse'
 
 export type OperationMap = typeof nodeOperation
 export type Operations = keyof OperationMap
@@ -92,8 +94,10 @@ const methods = {
       if (isMobile() && this.mobileMenu) {
         mobileMenu(this)
       } else {
-        this.contextMenu && contextMenu(this, this.contextMenuOption)
+        // this.contextMenu && contextMenu(this, this.contextMenuOption)
+        this.expandMenu && expandMenu(this, this.contextMenuOption)
       }
+      // this.hideExpandMenu && hideIconContainer(this)
       this.draggable && nodeDraggable(this)
       this.allowUndo && operationHistory(this)
     }

@@ -6,10 +6,11 @@ const getSibling = (obj: NodeObj): { siblings: NodeObj[]; index: number } => {
   return { siblings, index }
 }
 
-export function moveUpObj(obj: NodeObj): { currentIndex: number; swappedIndex: number; obj: NodeObj } {
+export function moveUpObj(obj: NodeObj): { currentIndex: number; swappedIndex: number; obj: NodeObj; siblings: any; oldSibling: any } {
   const { siblings, index } = getSibling(obj)
   const t = siblings[index]
   let swappedIndex
+  const oldSibling = siblings
 
   if (index === 0) {
     swappedIndex = siblings.length - 1
@@ -21,11 +22,12 @@ export function moveUpObj(obj: NodeObj): { currentIndex: number; swappedIndex: n
     siblings[swappedIndex] = t
   }
 
-  return { currentIndex: index, swappedIndex: swappedIndex, obj }
+  return { currentIndex: index, swappedIndex: swappedIndex, obj, siblings, oldSibling }
 }
 
-export function moveDownObj(obj: NodeObj): { currentIndex: number; swappedIndex: number; obj: NodeObj } {
+export function moveDownObj(obj: NodeObj): { currentIndex: number; swappedIndex: number; obj: NodeObj; siblings: any; oldSibling: any } {
   const { siblings, index } = getSibling(obj)
+  const oldSibling = siblings
   const t = siblings[index]
   let swappedIndex
 
@@ -39,7 +41,7 @@ export function moveDownObj(obj: NodeObj): { currentIndex: number; swappedIndex:
     siblings[swappedIndex] = t
   }
 
-  return { currentIndex: index, swappedIndex: swappedIndex, obj }
+  return { currentIndex: index, swappedIndex: swappedIndex, obj, siblings, oldSibling }
 }
 
 export function removeNodeObj(obj: NodeObj) {
@@ -49,42 +51,6 @@ export function removeNodeObj(obj: NodeObj) {
 }
 
 export function insertNodeObj(newObj: NodeObj, type: 'before' | 'after', obj: NodeObj) {
-  console.log('🚀 ~ insertNodeObj ~ obj:', obj)
-  console.log('🚀 ~ insertNodeObj ~ newObj:', newObj)
-  // const updatedChildren: any = newObj?.id || []
-  // console.log('🚀 ~ insertNodeObj ~ updatedChildren:', updatedChildren)
-
-  // if (updatedChildren.length) {
-  //   console.log(1)
-  //   // Tìm phần tử đầu tiên trong mảng `children` có thuộc tính `style`
-  //   const styledChild = updatedChildren.find(child => !!child.style)
-
-  //   // Nếu tìm thấy phần tử có `style`
-  //   if (styledChild) {
-  //     // Lấy style của phần tử này
-  //     const styleToApply = styledChild.style
-
-  //     // Tạo một mảng mới với các phần tử đã được áp dụng style
-  //     const newUpdatedChildren = updatedChildren.map(child => {
-  //       // Kiểm tra nếu phần tử chưa có style, mới áp dụng
-  //       if (!child.style) {
-  //         return { ...child, style: { ...styleToApply } }
-  //       }
-  //       return { ...child }
-  //     })
-
-  //     // Gán mảng mới này vào newNodeObj
-  //     newObj = {
-  //       ...newObj,
-  //       style: { ...styleToApply },
-  //       parent: {
-  //         ...newObj.parent,
-  //         children: newUpdatedChildren,
-  //       },
-  //     }
-  //   }
-  // }
-
   const { siblings, index } = getSibling(obj)
   if (type === 'before') {
     siblings.splice(index, 0, newObj)

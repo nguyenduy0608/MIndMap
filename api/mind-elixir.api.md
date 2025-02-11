@@ -84,7 +84,7 @@ export const methods: {
   renderArrow(this: MindElixirInstance): void
   editArrowLabel(this: MindElixirInstance, el: CustomSvg): void
   tidyArrow(this: MindElixirInstance): void
-  createArrow: (this: MindElixirInstance, from: Topic, to: Topic) => void
+  createArrow: (this: MindElixirInstance, from: any, to: any, mainId: any) => void
   removeArrow: (this: MindElixirInstance, linkSvg?: CustomSvg | undefined) => void
   selectArrow: (this: MindElixirInstance, link: CustomSvg) => void
   unselectArrow: (this: MindElixirInstance) => void
